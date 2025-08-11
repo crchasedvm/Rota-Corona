@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Guide to Rotavirus & Coronavirus Vaccination in NZ Dairy Cattle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Gold & Charcoal -->
+    <!-- Application Structure Plan: A single-page dashboard with fixed sidebar navigation is used to create an intuitive user experience. The structure is designed to first explain the core concept: vaccinating the dam to protect the calf. An interactive diagram of passive immunity transfer is central to this. Subsequent sections detail the disease, the economic impact, and the critical, synergistic relationship between vaccination and colostrum management. This non-linear flow allows users to quickly access the information they need, reinforcing the idea that vaccination and calf management are inseparable. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Passive Immunity Transfer -> Goal: Explain a biological process -> Viz: Interactive HTML/CSS Diagram -> Interaction: Click steps (Vaccination, Colostrum, Calf Protection) -> Justification: Visually demonstrates the link between the needle in the cow and the health of the calf, a crucial concept for user buy-in. -> Library/Method: HTML/CSS/JS.
+        - Report Info: Pathophysiology of Scours -> Goal: Explain how the viruses cause disease -> Viz: Simplified Before/After Diagram (HTML/CSS) -> Interaction: N/A (informational) -> Justification: Provides a simple, powerful visual of gut damage, explaining why scours are so severe. -> Library/Method: HTML/CSS.
+        - Report Info: Colostrum Quality Decline -> Goal: Emphasize urgency -> Viz: Line Chart -> Interaction: Hover for values -> Justification: A chart showing the rapid decline in colostrum quality over time is the most effective way to stress the importance of early feeding. -> Library: Chart.js (Canvas).
+        - Report Info: Control Strategy -> Goal: Guide/Checklist -> Viz: Numbered step-by-step list -> Interaction: N/A (informational flow) -> Justification: Combines vaccination, colostrum management, and hygiene into a single, actionable protocol. -> Library/Method: HTML/CSS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        .nav-link.active {
+            background-color: #2D3748; /* Dark Charcoal */
+            color: #F7FAFC;
+            transform: translateX(4px);
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        .protocol-stage {
+            transition: all 0.3s ease;
+        }
+        .protocol-stage.active {
+            border-color: #D69E2E; /* Gold */
+            background-color: #FFFBEB;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 bg-gray-900 text-white p-4 md:p-6 sticky top-0 md:h-screen">
+            <h1 class="text-2xl font-bold mb-6 text-center md:text-left">Calf Scour Vaccine Guide</h1>
+            <nav id="navigation">
+                <a href="#dashboard" class="nav-link active flex items-center p-3 my-1 rounded-lg hover:bg-gray-700">
+                    <span class="mr-3">🛡️</span> Dashboard
+                </a>
+                <a href="#disease" class="nav-link flex items-center p-3 my-1 rounded-lg hover:bg-gray-700">
+                    <span class="mr-3">🦠</span> The Disease
+                </a>
+                <a href="#protocol" class="nav-link flex items-center p-3 my-1 rounded-lg hover:bg-gray-700">
+                    <span class="mr-3">💉</span> The Protocol
+                </a>
+                <a href="#colostrum" class="nav-link flex items-center p-3 my-1 rounded-lg hover:bg-gray-700">
+                    <span class="mr-3">🍼</span> Colostrum is Key
+                </a>
+                <a href="#hygiene" class="nav-link flex items-center p-3 my-1 rounded-lg hover:bg-gray-700">
+                    <span class="mr-3">🧼</span> Hygiene & Efficacy
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-10">
+            
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Protecting Calves by Vaccinating Cows</h2>
+                <p class="text-gray-600 mb-8">An overview of using dam vaccination to prevent neonatal calf scours caused by Rotavirus and Coronavirus, a cornerstone of modern calf rearing in New Zealand.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="font-bold text-xl text-yellow-600 mb-2">The Core Principle</h3>
+                        <p class="text-gray-600">You vaccinate the cow to protect the calf. The vaccine boosts the dam's antibodies, which are then concentrated in her colostrum, providing direct protection to her newborn.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="font-bold text-xl text-red-700 mb-2">Major Cause of Scours</h3>
+                        <p class="text-gray-600">Rotavirus and Coronavirus are two of the most common viral causes of severe, watery scours in calves under 3 weeks of age, leading to dehydration, weight loss, and death.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="font-bold text-xl text-blue-700 mb-2">A Complete System</h3>
+                        <p class="text-gray-600">Success relies on three pillars: Vaccination, Colostrum Management, and Hygiene. If one pillar is weak, the entire system can fail.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4 text-center">The Power of Passive Immunity</h3>
+                    <p class="text-center text-gray-600 mb-6">This interactive diagram shows how vaccinating the dam translates into a protected calf. Click the stages to see how it works.</p>
+                     <div class="flex flex-col md:flex-row gap-6 items-center">
+                        <!-- Interactive Stages -->
+                        <div class="w-full md:w-1/3 space-y-4">
+                            <div class="protocol-stage border-2 p-4 rounded-lg cursor-pointer active" data-stage="vaccinate">
+                                <h4 class="font-bold">1. Vaccinate the Dam</h4>
+                                <p class="text-sm">The cow is vaccinated pre-calving.</p>
+                            </div>
+                            <div class="protocol-stage border-2 p-4 rounded-lg cursor-pointer" data-stage="colostrum">
+                                <h4 class="font-bold">2. Create "Gold" Colostrum</h4>
+                                <p class="text-sm">Antibodies are packed into colostrum.</p>
+                            </div>
+                            <div class="protocol-stage border-2 p-4 rounded-lg cursor-pointer" data-stage="protect">
+                                <h4 class="font-bold">3. Protect the Calf</h4>
+                                <p class="text-sm">Calf drinks colostrum and is protected.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Explanation Box -->
+                        <div id="protocol-explanation" class="w-full md:w-2/3 p-6 bg-yellow-50 rounded-lg">
+                            <!-- Content updated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- The Disease Section -->
+            <section id="disease" class="content-section">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">How The Viruses Cause Scours</h2>
+                <p class="text-gray-600 mb-8">Rotavirus and Coronavirus cause disease by attacking the cells that line the calf's small intestine. This damage has severe consequences for the calf's ability to absorb nutrients and water.</p>
+                
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4 text-center">Destruction of the Gut Lining</h3>
+                    <p class="text-center text-gray-600 mb-6">The viruses specifically target and destroy the mature cells at the tips of the intestinal villi. These finger-like projections are responsible for absorbing nutrients. When they are destroyed, the gut can't do its job.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center text-center">
+                        <div>
+                            <h4 class="text-xl font-bold text-green-600 mb-2">Healthy Gut</h4>
+                            <div class="p-4 bg-green-100 rounded-lg">
+                                <p class="text-4xl mb-2">🌿🌿🌿</p>
+                                <p class="font-semibold">Long, healthy villi provide a massive surface area for absorbing milk and water.</p>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-bold text-red-600 mb-2">Infected Gut</h4>
+                            <div class="p-4 bg-red-100 rounded-lg">
+                                <p class="text-4xl mb-2">🥀🥀🥀</p>
+                                <p class="font-semibold">The virus destroys the villi, leaving a blunted, damaged surface that cannot absorb fluid, leading to severe, watery diarrhoea and dehydration.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- The Protocol Section -->
+            <section id="protocol" class="content-section">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Vaccination Protocol</h2>
+                <p class="text-gray-600 mb-8">Correct timing of vaccination is essential to ensure that antibody levels in the colostrum are at their absolute peak when the calf is born. In New Zealand, the most common vaccine used is <span class="font-bold">Rotavec® Corona</span>.</p>
+                
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">The Vaccination Window</h3>
+                    <div class="space-y-6">
+                        <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
+                            <span class="text-3xl font-bold text-yellow-600">🎯</span>
+                            <div>
+                                <h4 class="text-xl font-bold">The Target</h4>
+                                <p class="text-gray-600">A single dose of vaccine should be given to each pregnant cow or heifer between <span class="font-bold">3 and 12 weeks</span> before calving is expected.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
+                             <span class="text-3xl font-bold text-yellow-600">🗓️</span>
+                            <div>
+                                <h4 class="text-xl font-bold">Practical Timing</h4>
+                                <p class="text-gray-600">For most seasonal-calving herds in New Zealand, this vaccination is conveniently done at dry-off. This ensures the entire herd is covered within the correct window before calving begins.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
+                            <span class="text-3xl font-bold text-yellow-600">🔄</span>
+                            <div>
+                                <h4 class="text-xl font-bold">Annual Requirement</h4>
+                                <p class="text-gray-600">This is not a one-off vaccine. A booster shot is required <span class="font-bold">every year</span> for every pregnant animal to ensure colostrum is fortified for each new crop of calves.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Colostrum is Key Section -->
+            <section id="colostrum" class="content-section">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Colostrum is Key: The 3 Q's</h2>
+                <p class="text-gray-600 mb-8">The vaccine creates the antibodies, but colostrum delivers them. Without excellent colostrum management, the entire vaccination effort is wasted. Follow the "3 Q's" rule for every calf.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-center">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="font-bold text-2xl text-yellow-600 mb-2">Quality</h3>
+                        <p class="text-gray-600">Feed only high-quality "gold" colostrum from the first milking of a healthy, vaccinated cow. Use a Brix refractometer to test quality (aim for >22%).</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="font-bold text-2xl text-yellow-600 mb-2">Quantity</h3>
+                        <p class="text-gray-600">The calf needs at least 10% of its bodyweight in colostrum. For a 40kg calf, this means <span class="font-bold">4 litres</span> in the first 12 hours.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="font-bold text-2xl text-yellow-600 mb-2">Quickly</h3>
+                        <p class="text-gray-600">The calf's ability to absorb antibodies plummets after birth. The first feed must be given within <span class="font-bold">6-12 hours</span> of life.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4 text-center">The Race Against Time</h3>
+                    <p class="text-center text-gray-600 mb-6">This chart shows how rapidly colostrum quality (antibody concentration) declines after a cow calves. This illustrates why the very first milking is so critical.</p>
+                    <div class="chart-container">
+                        <canvas id="colostrumChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Hygiene & Efficacy Section -->
+            <section id="hygiene" class="content-section">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Maximizing Vaccine Efficacy</h2>
+                <p class="text-gray-600 mb-8">The vaccine is not a magic bullet. Its success depends entirely on the environment the calf is born into. Good hygiene reduces the number of pathogens the calf is exposed to, making the vaccine's job possible.</p>
+                
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4 text-center">Understanding "Challenge Pressure"</h3>
+                    <p class="text-center text-gray-600 mb-6">Think of it as a battle. The colostrum from a vaccinated cow gives the calf a shield. Hygiene determines the size of the enemy army.</p>
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-8 p-4">
+                        <!-- Low Challenge -->
+                        <div class="text-center">
+                            <h4 class="text-xl font-semibold mb-2 text-green-600">Low Challenge</h4>
+                            <div class="p-4 bg-green-100 rounded-lg">
+                                <p class="text-lg font-bold">🛡️ > 🦠</p>
+                                <p>In a clean environment, the calf's antibody shield easily defeats the small number of virus particles. The calf stays healthy.</p>
+                            </div>
+                        </div>
+                        <!-- High Challenge -->
+                        <div class="text-center">
+                            <h4 class="text-xl font-semibold mb-2 text-red-600">High Challenge</h4>
+                            <div class="p-4 bg-red-100 rounded-lg">
+                                <p class="text-lg font-bold">🛡️ < 🦠🦠🦠</p>
+                                <p>In a dirty environment, the antibody shield is overwhelmed by a massive viral load. The calf gets sick despite vaccination.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md mt-8">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">How Hygiene Tips the Scales in Your Favor</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
+                            <span class="text-2xl">🏠</span>
+                            <div>
+                                <h4 class="font-bold">Clean & Dry Bedding</h4>
+                                <p class="text-gray-600">Reduces the amount of virus the calf is exposed to when it lies down. Wet, dirty bedding is a major source of infection.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
+                            <span class="text-2xl">🥣</span>
+                            <div>
+                                <h4 class="font-bold">Disinfected Feeders & Equipment</h4>
+                                <p class="text-gray-600">Prevents the transfer of virus from one calf to another during feeding. All equipment must be scrubbed clean and disinfected between uses.</p>
+                            </div>
+                        </li>
+                         <li class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
+                            <span class="text-2xl">➡️</span>
+                            <div>
+                                <h4 class="font-bold">All-In / All-Out Pen Management</h4>
+                                <p class="text-gray-600">Prevents older calves from passing pathogens to younger, more vulnerable calves. Pens should be completely emptied, cleaned, and disinfected between batches.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
+                            <span class="text-2xl">👨‍👩‍👧‍👦</span>
+                            <div>
+                                <h4 class="font-bold">Low Stocking Density</h4>
+                                <p class="text-gray-600">Reduces stress and lowers the concentration of pathogens in the environment. Overcrowding is a major risk factor for scours outbreaks.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-4 p-4 bg-yellow-100 border-l-4 border-yellow-500 rounded-lg">
+                            <span class="text-2xl">🛡️</span>
+                            <div>
+                                <h4 class="font-bold">Nutritional Gut Support</h4>
+                                <p class="text-gray-600">Additives like MOS and Beta-glucans act as a biological shield inside the gut. MOS can bind to pathogens to help flush them out, while Beta-glucans prime the calf's own immune cells. This reduces the number of active invaders, giving the vaccine-derived antibodies a much better chance of success.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const navigationLinks = document.querySelectorAll('#navigation .nav-link');
+    const contentSections = document.querySelectorAll('.content-section');
+    const protocolStages = document.querySelectorAll('.protocol-stage');
+    const protocolExplanation = document.getElementById('protocol-explanation');
+
+    const protocolExplanations = {
+        'vaccinate': `
+            <h3 class="text-xl font-bold mb-2 text-gray-800">1. Vaccinate the Dam</h3>
+            <p class="text-gray-700">A single dose of the vaccine is given to the pregnant cow 3-12 weeks before she is due to calve. Her immune system responds by producing high levels of specific antibodies against Rotavirus, Coronavirus, and E. coli.</p>
+        `,
+        'colostrum': `
+            <h3 class="text-xl font-bold mb-2 text-gray-800">2. Create "Gold" Colostrum</h3>
+            <p class="text-gray-700">In the final weeks of pregnancy, the cow's body actively transfers these newly created antibodies from her bloodstream into her udder, concentrating them in the colostrum (first milk). This process turns her colostrum into a potent, antibody-rich "first meal" for the calf.</p>
+        `,
+        'protect': `
+            <h3 class="text-xl font-bold mb-2 text-gray-800">3. Protect the Calf</h3>
+            <p class="text-gray-700">The newborn calf has no antibodies of its own. When it drinks the antibody-rich colostrum, these antibodies coat its intestine, providing a protective barrier. If the calf is exposed to Rotavirus or Coronavirus, these antibodies are waiting to neutralize the viruses before they can cause infection. <strong>This is called passive immunity.</strong></p>
+        `
+    };
+
+    function updateProtocolExplanation(stageKey) {
+        protocolExplanation.innerHTML = protocolExplanations[stageKey];
+    }
+
+    function showSection(hash) {
+        const targetId = hash.substring(1);
+        
+        contentSections.forEach(section => {
+            section.classList.toggle('active', section.id === targetId);
+        });
+
+        navigationLinks.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === hash);
+        });
+    }
+
+    navigationLinks.forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetHash = this.getAttribute('href');
+            history.pushState(null, null, targetHash);
+            showSection(targetHash);
+        });
+    });
+    
+    window.addEventListener('popstate', () => {
+        showSection(window.location.hash || '#dashboard');
+    });
+
+    protocolStages.forEach(stage => {
+        stage.addEventListener('click', function() {
+            protocolStages.forEach(s => s.classList.remove('active'));
+            this.classList.add('active');
+            const stageKey = this.getAttribute('data-stage');
+            updateProtocolExplanation(stageKey);
+        });
+    });
+
+    // Initial setup
+    showSection(window.location.hash || '#dashboard');
+    updateProtocolExplanation('vaccinate');
+
+    // Only create chart if the canvas element exists
+    const colostrumCanvas = document.getElementById('colostrumChart');
+    if (colostrumCanvas) {
+        const colostrumCtx = colostrumCanvas.getContext('2d');
+        const colostrumChart = new Chart(colostrumCtx, {
+            type: 'line',
+            data: {
+                labels: ['At Calving', '6 Hours Post', '12 Hours Post', '24 Hours Post'],
+                datasets: [{
+                    label: 'Antibody Concentration (IgG g/L)',
+                    data: [100, 65, 40, 15],
+                    backgroundColor: 'rgba(214, 158, 46, 0.2)',
+                    borderColor: 'rgba(214, 158, 46, 1)',
+                    borderWidth: 3,
+                    tension: 0.1,
+                    fill: true,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    title: {
+                        display: true,
+                        text: 'Decline in Colostrum Quality After Calving'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Antibody Level'
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+
+</body>
+</html>
